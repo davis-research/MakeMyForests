@@ -61,3 +61,14 @@ This function takes a vector of species codes (the FIA numbers) and your trimmed
 This function takes your trimmed tree data frame’s SPCD column,  and your species info (sppinfo) data frame (see the example file) and returns a vector where the max height of a particular species is in the correct spot. Since maxht is a constant for species, this allows you to use it like a factor in the NLS model. You should be able to input either the full trimmed tree data frame or just the vector.
 
 
+### putH2
+
+This function takes your trimmed tree data frame and your species info data frame and returns a vector of values computed by the getH2 function to add to your species info data frame. 
+
+### getRadius
+
+This function computers a radius according to equations established by Bechtold et al. (2004). You must input a data.frame with “spcc”, “b0”, and “b1”. This function does not currently support the “b2” parameter because I didn’t need it for the species I was calculating. This function also takes DIA in centimeters and converts it to inches for the calculations, then returns the LCR in meters, not feet. 
+
+### get C2
+
+This function gets the mean uncompacted crown ratio for each species and puts it in a vector. It takes your species info data frame and the tree data frame. 
