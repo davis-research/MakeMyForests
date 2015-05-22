@@ -1,15 +1,19 @@
 ### Package "FIAimport" -- creates the functions needed to import FIA data and get it ready for analysis with SORTIE-ND
 
 ## Takes a directory, pulls the CSV files, and creates equations to read them in with a parse() function later
-readFIAdata <- function(directory=""){
+readFIAdata <- function(directory="", lower=TRUE){
 	## get the files that are CSV 
 	## in the provided directory
 	filenames <- list.files(path=directory, 
 		pattern="\\.csv", ignore.case=TRUE)
 	
 	## trim filenames to make variable names
-	varnames <- tolower(gsub("\\.csv$", "", 
-	filenames, ignore.case=TRUE))
+	varnames <- gsub("\\.csv$", "", 
+	filenames, ignore.case=TRUE)
+	
+	## if lower is true, make varnames lowercase
+	if(lower==TRUE){ varnames <- tolower(varnames) }
+	
 	
 	## make appropriate filepaths for CSV reads
 	full_filenames <- paste(directory, 
@@ -44,7 +48,7 @@ pullSpeciesCodes <- function(species.list, refdataframe){
 		SPECIES_SYMBOL==species.list[i], 
 		select="SPCD")
 		
-		##incremet counter
+		##increment counter
 		i <- i+1
 	}	
 	## return our results in a vector
@@ -70,8 +74,14 @@ pullTrees <- function(sppcodes, treedb, select=c("SPCD", "DIA", "HT", "CR")){
 		
 		## automatically convert from feet to meters
 		## and inches to centimeters
-		temp$HT <- unitConvert(temp$HT, "ft", "m")
-		temp$DIA <- unitConvert(temp$DIA, "in", "cm")
+		if("HT" %in% names(temp)) {
+			temp$HT <- unitConvert(temp$HT, "ft", "m")
+		}
+		
+		if("DIA" %in% names(temp)){
+			temp$DIA <- unitConvert(temp$DIA, "in", "cm")
+		}
+		
 		## if this is the first time through,
 		## initialize the new dataframe
 		if(i == 1){
@@ -102,18 +112,26 @@ unitConvert <- function(x, invar, outvar){
 	if(invar == "ft"){
 		response[["m"]] <- x * 0.3048
 		response[["cm"]] <- x * 30.48
+		response[["in"]] <- x * 12
+		response[["ft"]] <- x
 	}
 	if(invar == "in"){
 		response[["cm"]] <- x * 2.54
 		response[["m"]] <- x * 0.0254
+		response[["ft"]] <- x / 12
+		response[["in"]] <- x
 	}
 	if(invar == "cm"){
 		response[["in"]] <- x / 2.54
 		response[["ft"]] <- x / 30.48
+		response[["m"]] <- x / 100
+		response[["cm"]] <- x
 	}
 	if(invar == "m"){
 		response[["in"]] <- x / 0.0254
-		response[[ft]] <- x / 0.3048
+		response[["ft"]] <- x / 0.3048
+		response[["cm"]] <- x * 100
+		response[["m"]] <- x
 	}
 	return(response[[outvar]])
 }
@@ -156,14 +174,25 @@ getMaxHeight <- function(codes, treedb){
 
 
 ## put max heights into treedb according to their spcd
+
+### check this one for function
 putMaxHeight <- function(sppinfo, treespcd){
 	## error checking
 	if(!is.data.frame(sppinfo)) stop("sppinfo must be a dataframe.")
-	if(!is.vector(treespcd)) stop("treespcd must be a vector.")
-	if("maxht" %in% colnames(treedb) == FALSE) stop("Must have maxht column in dataframe")
-		if("spcd" %in% colnames(treedb) == FALSE) stop("Must have spcd column in dataframe")
-		
-		
+	if(!is.vector(treespcd)){
+		if(!is.dataframe){
+		stop("treespcd must be a vector or dataframe.")	
+		} else{
+			if(("SPCD" %in% colnames(treespcd)) == FALSE){
+				stop("Must have SPCD column")
+			}
+			else{
+				treespcd <- as.vector(treespcd$SPCD)
+				}
+		}
+	}
+	
+
 	## initialize counter
 	i <- 1
 	

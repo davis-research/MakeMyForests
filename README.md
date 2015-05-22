@@ -24,6 +24,40 @@ This function does not currently have error-checking built in, so if you don’t
 
 ### pullSpeciesCodes
 
-This function accepts a list of species short codes (Species symbols) and a reference data frame (REF\_SPECIES.CSV), and returns the SPCD codes needed to access data by species in the FIA dataset. The species short codes are the universal codes used by other organizations, including the [USDA PLANTS database](http://plants.usda.gov). You can also look up the SPCD numbers manually in the REF\_SPECIES.CSV file mentioned in the introduction. 
+This function accepts a character vector of species short codes (Species symbols) and a reference data frame (REF\_SPECIES.CSV), and returns the SPCD codes needed to access data by species in the FIA dataset. The species short codes are the universal codes used by other organizations, including the [USDA PLANTS database](http://plants.usda.gov). You can also look up the SPCD numbers manually in the REF\_SPECIES.CSV file mentioned in the introduction. 
+
+This function does not have error checking, so please play nice with it. You will need to manually load the reference species data frame. It returns an unlisted vector of numbers that will match your species code vector. You can combine these two vectors to begin a Species Info data frame. 
+
+### pullTrees
+
+This function takes a list of species codes (often generated with the pullSpeciesCodes above), and also the full STATE\_TREE database in a data.frame, and returns a trimmed data frame with SPCD, DIA, HT, and CR by default, but you can specify others using the optional “select” parameter. 
+
+This function also automatically converts HT and DIA, if they exist, into meters and centimeters from feet and inches. Because the American system sucks. This function returns a data frame of values for each of your chosen species. 
+
+### unitConvert
+
+This function takes a single numeric object or a vector of numeric objects and converts feet, inches, centimeters, and meters, to any of the other four. It accepts a numeric object or vector, an “invar” and an “outvar” — these two have the following options: “ft”, “in”, “cm”, “m”. It returns the transformed number(s).
+
+### std
+
+This function takes “x”, which is a vector of data points, and finds the standard error. It is copied from the internet and breakable if you try to put something other than your data in. 
+
+### getH2
+
+This function takes your trimmed tree data frame and a start value, and fits an NLS equation to columns named HT, DIA, and maxht, with the following equation:
+
+nls(HT ~ maxht*(1-exp(-DIA))
+
+You are expected to provide a starting value for the DIA (diameter) coefficient. The initial value, if none is provided, is 1. 
+
+This function returns the coefficient for DIA. 
+
+### getMaxHeight
+
+This function takes a vector of species codes (the FIA numbers) and your trimmed tree data frame. It returns the maximum of the HT (height) column for a particular species code in a vector matching the inputted species codes. 
+
+### putMaxHeight
+
+This function takes your trimmed tree data frame’s SPCD column,  and your species info (sppinfo) data frame (see the example file) and returns a vector where the max height of a particular species is in the correct spot. Since maxht is a constant for species, this allows you to use it like a factor in the NLS model. You should be able to input either the full trimmed tree data frame or just the vector.
 
 
