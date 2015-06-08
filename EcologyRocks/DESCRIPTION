@@ -1,0 +1,8 @@
+Package: EcologyRocks
+Title: SORTIE-ND Preparation From FIA And USGS Forest Inventory Data
+Version: 0.0.0.9000
+Authors@R: person("Samantha", "Davis", email = "clubtenna@gmail.com", role = c("aut", "cre"))
+Description: This package contains miscellaneous functions that help the user prepare basic forest inventory data for use with SORTIE-ND, a neighborhood dynamics forest gap model.
+Depends: R (>= 3.2.0)
+License: CC-BY-4.0 https://creativecommons.org/licenses/by/4.0/
+LazyData: true

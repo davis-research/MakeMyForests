@@ -14,7 +14,7 @@ source("import_functions.r")
 #### Code Execution ####
 
 
-commands <- readFIAdata("data/CA")
+commands <- readCSVs("data/CA")
 eval(parse(text=commands[49])) ## only make ca_tree file
 
 
