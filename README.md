@@ -5,7 +5,7 @@ This project in particular is where I am preparing my starting parameters for SO
 
 These scripts are in R, and I've attempted to make them as easy-to-understand and as clean as possible, while retaining the specifics to my project. 
 
-If you want to replicate what I've done, you'll need these scripts and a state's individual tree data, which can be found in the [FIA Data Mart](http://apps.fs.fed.us/fiadb-downloads/datamart.html). You'll also need the species reference codes, which is the REF_SPECIES.CSV file that can be found in the FIA Data Mart or [here](http://apps.fs.fed.us/fiadb-downloads/REF_SPECIES.CSV). Please contact me for any questions you might have. 
+If you want to replicate what I've done, you'll need these scripts and a state's individual tree data, which can be found in the [FIA Data Mart](http://apps.fs.fed.us/fiadb-downloads/datamart.html). You'll also need the species reference codes, which is the REF\_SPECIES.CSV file that can be found in the FIA Data Mart or [here](http://apps.fs.fed.us/fiadb-downloads/REF_SPECIES.CSV). Please contact me for any questions you might have. 
 
 
 # Individual Script Notes
