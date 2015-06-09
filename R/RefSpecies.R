@@ -1,0 +1,31 @@
+#' RefSpecies Data
+#' 
+#' This data comes from the USDA forest inventory analysis (FIA)
+#'      DataMart. You can find a more recent copy for 
+#'      your species of interest by visiting 
+#'      \url{http://apps.fs.fed.us/fiadb-downloads/datamart.html}. 
+#'      The REF_SPECIES.csv file is located in the "Download 
+#'      Reference Data" section. See the FIADB documentation for 
+#'      more information: 
+#'  \url{http://www.fia.fs.fed.us/library/database-documentation/}
+#'      
+#'  @format A data frame with 78 columns and 2568 rows of species.
+#'  \describe{
+#'      \item{SPCD}{A four digit numerical code that corresponds to a species or subspecies of plant.}
+#'      \item{COMMON_NAME}{The common name of the species.}
+#'      \item{GENUS}{The genus of the species.}
+#'      \item{SPECIES}{The species of the species. (Yeah, I 
+#'          went there.)}
+#'      \item{VARIETY}{The variety of the species, if applicable.
+#'          Often blank.}
+#'      \item{SUBSPECIES}{The subspecies of the organism, if
+#'          applicable. Often blank.}
+#'      \item{SPECIES_SYMBOL}{The common 4 letter and optional
+#'          number designation for a species. Matches the USDA
+#'          PLANTS database designations, and is what we use to
+#'          find or match species in this table.}
+#'      \item{etc...}{There are a lot more columns, most of which
+#'           are irrelevant to our aims with this package.} 
+#'  }
+#'  
+"RefSpecies"

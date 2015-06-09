@@ -11,12 +11,10 @@ unitConvert(x, invar, outvar)
 
 \item{invar}{The units of x. Acceptable inputs are: ft, in, cm, m, in3.}
 
-<<<<<<< HEAD
 \item{outvar}{The desired units of x. Acceptable outputs are: ft, in, cm, m, cm3.
 cm3 is only acceptable if the inputvar is in3.}
-=======
+
 \item{outvar}{The desired units of x. Acceptable outputs are: ft, in, cm, m, cm3.}
->>>>>>> 6b627a8d487106cd02b21b97030915d64d32de70
 }
 \value{
 Returns x, transformed into the appropriate units.

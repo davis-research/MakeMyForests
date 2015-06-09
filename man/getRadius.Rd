@@ -7,21 +7,34 @@
 getRadius(speq, treedb)
 }
 \arguments{
-\item{speq}{This is a dataframe with the species codes (numbers)
+\item{speq}{This is a dataframe with the species codes (""spcd")
 and b0 and b1 for the linear regressions.}
 
-\item{treedb}{This is your reference tree database.}
+\item{treedb}{This is your reference tree database. Must have,
+at minimum, spcd (species code) and dia (diameter at base
+ height) in cm.}
 }
 \value{
 This function returns a list of crown radii
     matching the treedb length for your species.
 }
 \description{
-Get the Crown Radius Of Individual Trees
-}
-\note{
 This does a linear regression to calculate crown radius
        from diameter (DIA) using species-specific intercept and
-       slope.
+       slope. Specifically, it retrieves dbhs, converts
+       them back to inches, calculates the regression,
+       finds the value of crown radius, and converts that back
+       to the metric system.
+}
+\note{
+This function converts column names to lowercase
+    before running; case does not matter.
+}
+\examples{
+speciesCodes <- data.frame(spcd=c(2,5,8),
+     b0=(0.1, 0.3, 0.2), b1=c(1, 1, 2))
+ treesDataFrame <- data.frame(spcd=c(2, 5, 8),
+     dia=c(5.5, 6.8, 7.2))
+ getRadius(speciesCodes, treesDataFrame)
 }
 

@@ -9,8 +9,9 @@
 #' @examples 
 #' 
 #' sampleList <- c("ABCO", "ABMA")
-#' sampleRef <- data.frame(SPECIES_SYMBOL=c("ABCO", "ABMA", "CADE27"), SPCD=c(15, 20, 81), stringsAsFactors=FALSE)
-#' pullSpeciesCodes(sampleList, sampleRef)
+#' ## RefSpecies is an included reference species list for CA
+#' 
+#' pullSpeciesCodes(sampleList, RefSpecies)
 
 
 ## Get species codes from the reference table

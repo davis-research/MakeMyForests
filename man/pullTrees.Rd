@@ -9,23 +9,41 @@ pullTrees(sppcodes, treedb, select = c("PLT_CN", "TREE", "SPCD", "DIA", "HT",
 }
 \arguments{
 \item{sppcodes}{A vector of the species spcd numbers. These are
-found in the FIA's REF_SPECIES.csv file for your state, or can be
-imported using \code{\link{pullSpeciesCodes}} function.}
+found in the FIA's REF_SPECIES.csv file for your state, or
+ can be imported using the
+ \code{\link{pullSpeciesCodes}} function.}
 
 \item{treedb}{A dataframe containing the columns specified
 in select, along with an SPCD column.}
 
-\item{select}{The columns that you want to keep from the larger treedb.}
+\item{select}{The columns that you want to keep from the
+larger treedb. The default select values are "PLT_CN",
+"TREE", "SPCD", "DIA", "HT", "CR", "CDENCD", "TRANSCD",
+"BHAGE", "TOTAGE", and "CLIGHTCD."}
 }
 \value{
-Returns a subsetted version of treedb with just the species you requested.
+Returns a subsetted version of treedb with just the
+    species you requested.
 }
 \description{
-Get Individual Tree Records From A Reference FIA datafile
+This function helps you pick which species you want to focus on
+    for your state. TREE.CSV files for each state are large and
+    by nature, contain a large amount of extraneous information.
+    You may want to only look at softwoods or hardwoods or
+    Maples. This function lets you put a vector of SPCD numbers
+    and the full state tree file in, and receive a trimmed file
+    with only your species of interest.
+}
+\note{
+This function assumes that the HT and DIA columns,
+    standard to the FIA datasets, are in feet and inches. It
+    will automatically convert these to meters and centimeters,
+    respectively.
 }
 \examples{
-trees <- read.csv("http://apps.fs.fed.us/fiadb-downloads/CA_TREE.CSV", stringsAsFactors=FALSE)
 sampleSppCodes <- c(15, 20, 81)
-store <- pullTrees(sampleSppCodes, trees)
+## FullTreesCA is the CA_TREE.csv datafile from FIA
+## see ?FullTreesCA for details
+trees <- pullTrees(sampleSppCodes, FullTreesCA)
 }
 
