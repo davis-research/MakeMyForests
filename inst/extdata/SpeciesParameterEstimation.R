@@ -128,3 +128,7 @@ speciesInfo$MaxYrlyDia <- speciesInfo$YrlyDiaMaxLt + 2*speciesInfo$YrlyDiaMaxLtS
 
 ## The finished speciesInfo table.
 speciesInfo
+
+## Optional: Write to CSV file or save RData
+# write.csv("SpeciesInfo.csv")
+# save(speciesInfo, file="speciesInfo.Rdata")
