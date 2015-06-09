@@ -6,8 +6,12 @@ export(getMaxChar)
 export(getRadius)
 export(pullSpeciesCodes)
 export(pullTrees)
+<<<<<<< HEAD
 export(putH2)
 export(putMaxHeight)
 export(readCSVs)
 export(se)
+=======
+export(readCSVs)
+>>>>>>> 6b627a8d487106cd02b21b97030915d64d32de70
 export(unitConvert)

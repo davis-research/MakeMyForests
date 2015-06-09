@@ -2,21 +2,32 @@
 #' 
 #' @param x A single number or vector of numbers to convert
 #' @param invar The units of x. Acceptable inputs are: ft, in, cm, m, in3.
+<<<<<<< HEAD
 #' @param outvar The desired units of x. Acceptable outputs are: ft, in, cm, m, cm3. 
 #'     cm3 is only acceptable if the inputvar is in3.
+=======
+#' @param outvar The desired units of x. Acceptable outputs are: ft, in, cm, m, cm3.
+>>>>>>> 6b627a8d487106cd02b21b97030915d64d32de70
 #' @return Returns x, transformed into the appropriate units.
 #' @export 
 #' @examples 
 #' 
 #' unitConvert(2, "in", "cm")
+<<<<<<< HEAD
 #' 
+=======
+>>>>>>> 6b627a8d487106cd02b21b97030915d64d32de70
 
 unitConvert <- function(x, invar, outvar){
   ## make sure variables are correct
   if(!is.numeric(x)) stop("x must be numeric")
   
+<<<<<<< HEAD
   invar <- tolower(invar)
   outvar <- tolower(outvar)
+=======
+  
+>>>>>>> 6b627a8d487106cd02b21b97030915d64d32de70
   
   ## initialize response vector
   response <- list()
