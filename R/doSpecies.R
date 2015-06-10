@@ -33,7 +33,8 @@ doSpecies <- function(trees, functionClass, functionRecord, response="diayr", pr
   } else{
     for(i in 1:length(SPCD)){
       temp <- trees[trees$SPCD==SPCD[i],]
-      store <- glm(response~predictor, data=temp)
+      model <- paste(response, "~", predictor, sep="")
+      store <- glm(model, data=temp)
       returnVal[i] <- ifelse(functionRecord=="slope", store$coefficients[2], store$coefficients[1])
       i <- i + 1
     }

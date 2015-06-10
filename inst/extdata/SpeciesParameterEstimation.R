@@ -124,6 +124,7 @@ speciesInfo$YrlyDiaNoLtSD <- doSpecies(LightedTrees[LightedTrees$light==0,],
                                         "boot", "sd")
 speciesInfo$YrlyDiaMaxLtSD <- doSpecies(LightedTrees[LightedTrees$light==100,],
                                          "boot", "sd")
+doSpecies(LightedTrees, "glm", "int")
 speciesInfo$MaxYrlyDia <- speciesInfo$YrlyDiaMaxLt + 2*speciesInfo$YrlyDiaMaxLtSD
 
 ## The finished speciesInfo table.
