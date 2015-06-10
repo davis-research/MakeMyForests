@@ -14,3 +14,5 @@ library(roxygen2)
 document()
 
 install("../MakeMyForests")
+
+## I have the FIA stuff fully integrated; I need to work on the USGS stuff.
