@@ -2,21 +2,19 @@
 % Please edit documentation in R/putH2.R
 \name{putH2}
 \alias{putH2}
-\title{Returns a Vector of H2 Values For Species}
+\title{Returns a Vector of Slope of Asymptotic Height Values For Species}
 \usage{
 putH2(sppinfo, treedb)
 }
 \arguments{
-\item{sppinfo}{Should be a dataframe with "spcd" column. Need to update, because it could easily be a vector.}
+\item{sppinfo}{Should be a dataframe with "spcd" column. Need to update,
+because it could easily be a vector.}
 
 \item{treedb}{Your reference tree database, as full as needed.}
 }
 \description{
-Returns a Vector of H2 Values For Species
-}
-\note{
-This function is basically a wrapper for getH2, to sort
-    by species instead of assuming that you already put the
-    trimmed treedb file in or only need one go of it.
+This function is a wrapper for \code{\link{getH2}}, to sort by species
+  instead of assuming that you already put the trimmed treedb file in or only
+  need one go of it. Read \code{\link{getH2}} for more information about how this parameter is calculated.
 }
 
