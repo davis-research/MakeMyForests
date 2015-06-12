@@ -106,22 +106,43 @@ speciesInfo$E1 <- (doFxBySort(mean, "SPCD", "TRANSCD", TreesCA, extraParams=list
 ## This is a good place to save, if you need to. 
 # write.csv(speciesInfo, file="speciesInfo.csv")
 
-## Finding minimum adult DBH can be challenging. For consistency, I decided to
-## calculate the reproductive dbh from reproductive age that was found in the
-## literature. I did this by regressing DIA against BHAGE in TreesCA, then
-## predicting DIA from the minimum age I found. I did this interactively, and
-## did not write code to support this function in MakeMyForests. Here are my
-## manual values:
-speciesInfo$AD_DBH <- c(12, 16, 5, 
-                        5, 5, 5, 
-                        15, 22, 9, 
-                        6, 13)
+## Finding minimum adult DBH can be challenging. I was, however, able to find
+## the minimum age of reproduction for my 11 species. So, to calculate minimum
+## adult DBH, I performed a regression with DBH as the response variable and
+## BHAGE as the predictor, then used that regression to predict new values of
+## DBH. For each species, I plugged in the minimum adult age and calculated the
+## new, estimated diameter. It's not perfect, but it's the best we have.
+
+## Original minimum adult ages from literature searches.
+speciesInfo$minAge <- c(40, 35, 10,
+             7, 5, 8,
+            16, 40, 15,
+            20, 30)
+
+TreesCA$minAge <- unlist(putChar(TreesCA, speciesInfo[,c("SPCD", "minAge")], "minAge"))
+speciesInfo$minDBH <- doFxBySort(predictYfromLin, "SPCD", c("minAge", "DIA", "BHAGE"), TreesCA, extraParams=list(formula="DIA~BHAGE"))
 
 
-## Calculating light data. 
+## Finally, we need some information about trees growing in full-light and
+## no-light condition. More specifically, we need the yearly diameter growth in
+## no-light and high-light conditions. Unfortunately, data through time are not
+## available for our study species. As an alternative, I decided to use the
+## snapshot approach. For some trees in the FIA dataset, both BHAGE *and*
+## CLIGHTCD will be filled out. CLIGHTCD is a rating system from 1-5, where 1
+## means that the tree is totally shaded and 5 means that the tree is in full
+## sun. Using these two extremes, we can look at diameter divided by age (to get
+## the average diameter increase per year) in both no-light and full-light
+## conditions.
+
+## This just subsets the data into trees with both BHAGE and CLIGHTCD available, and also does some housecleaning by converting CLIGHTCD into a usable format, calculating dia/yr, etc.
 LightedTrees <- prepLightData(TreesCA)
 
-## Calculate growth at 0 light, 100 light, plus standard deviations
+## Calculate growth at 0 light, 100 light, plus standard deviations. doSpecies
+## is a function that is more specific than doFxBySort; it only calculates one
+## of four possibilities. The bootstrapped mean, the bootstrapped standard
+## deviation, the slope of a line, and the intercept of a line, all for these
+## light data. Hopefully future versions of MakeMyForests will eliminate this
+## redundancy and wrap the functions into a more general counterpart.
 speciesInfo$YrlyDiaNoLt <- doSpecies(LightedTrees[LightedTrees$light==0,],
                                         "boot", "mean")
 speciesInfo$YrlyDiaMaxLt <- doSpecies(LightedTrees[LightedTrees$light==100,],
@@ -132,11 +153,15 @@ speciesInfo$YrlyDiaMaxLtSD <- doSpecies(LightedTrees[LightedTrees$light==100,],
                                          "boot", "sd")
 speciesInfo$SlopeYrlyGrowth <- doSpecies(LightedTrees, "glm", "slope")
 speciesInfo$IntYrlyGrowth <- doSpecies(LightedTrees, "glm", "int")
+
+## Finally, to calculate the maximum potential yearly diameter increase in high
+## light, we take the mean + 2 sd to calculate a potential at 95% of possible
+## values.
 speciesInfo$MaxYrlyDia <- speciesInfo$YrlyDiaMaxLt + 2*speciesInfo$YrlyDiaMaxLtSD
 
-## The finished speciesInfo table.
+## The finished speciesInfo table, with all of the characteristics that CAN be calculated from FIA inventory data for SORTIE-ND.
 speciesInfo
 
 ## Optional: Write to CSV file or save RData
-# write.csv("SpeciesInfo.csv")
+# write.csv(speciesInfo, "SpeciesInfo.csv")
 # save(speciesInfo, file="speciesInfo.Rdata")
