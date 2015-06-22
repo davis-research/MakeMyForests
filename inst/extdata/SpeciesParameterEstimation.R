@@ -32,7 +32,7 @@ speciesCodes <- pullSpeciesCodes(speciesShortCodes,
 ## Trim the table to make it more manageable. FullTreesCA is the CA_TREE.CSV
 ## file available at the FIA datamart.
 
-#trees <- pullTrees(speciesCodes, FullTreesCA)
+trees <- pullTrees(speciesCodes, FullTreesCA, c("PLT_CN", "TREE", "STATUSCD", "SPCD", "DIA", "HT", "CR", "CDENCD", "TRANSCD", "BHAGE", "TOTAGE", "CLIGHTCD"))
 
 #########  Generating Species Statistics From TreesCA ##########
 
@@ -165,3 +165,11 @@ speciesInfo
 ## Optional: Write to CSV file or save RData
 # write.csv(speciesInfo, "SpeciesInfo.csv")
 # save(speciesInfo, file="speciesInfo.Rdata")
+# 
+
+speciesInfo$NumAlive <- doFxBySort(sum, "SPCD", c("STATUSCD"), trees[trees$STATUSCD==1,])
+speciesInfo$NumDead <- doFxBySort(sum, "SPCD", c("STATUSCD"), trees[trees$STATUSCD==2,])/2
+speciesInfo$MortalityRate <- speciesInfo$NumDead / (speciesInfo$NumAlive + speciesInfo$NumDead)
+speciesInfo$SurvivalRate <- 1-speciesInfo$MortalityRate
+## remove unneeded columns
+speciesInfo <- speciesInfo[,-c(10:15, 17:18)]

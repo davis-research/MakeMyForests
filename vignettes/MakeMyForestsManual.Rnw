@@ -1,0 +1,315 @@
+\documentclass{article}
+\usepackage{natbib}
+\usepackage[hidelinks]{hyperref}
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+% \VignetteIndexEntry{MakeMyForestsManual}
+
+\title{MakeMyForests: Using USDA Forest Service Forest Inventory and Analysis data to parameterize SORTIE-ND}
+\author{Samantha L. Davis}
+
+\maketitle
+
+\section{Introduction}
+
+MakeMyForests is an R package designed with a relatively narrow objective: to develop parameters for SORTIE-ND. SORTIE-ND is an individual-tree forest gap model that focuses on neighborhood dynamics to drive forest succession. In other words, SORTIE-ND models forest dynamics based on the growth and success of individual trees, instead of the success of a stand or species. This type of model can be slow and computationally intensive, because it performs calculations for each time step on each tree, which can number in the thousands. 
+
+SORTIE-ND was originally conceived of by \citet{Pacala1996}, and extensively tested with data from eastern North American deciduous forests. Although SORTIE-ND is incredibly useful ``out of the box'' for eastern forests, it is not as accessible for those interested in other forest ecosystems. This R package is intended to help those interested in applying SORTIE-ND to new systems. Specifically, this R package will help calculate broad-brush parameters for individual species by taking advantage of the extensive USDA Forest Service's Forest Inventory and Analysis dataset, which is a survey of trees across the United States. The examples contained within MakeMyForests are from the California data available at the \href{http://apps.fs.fed.us/fiadb-downloads/datamart.html}{FIA Data Mart} (current as of 2015-06). We primarily use individual state's ``TREE.CSV" files, but you'll also need the \href{http://apps.fs.fed.us/fiadb-downloads/REF\_SPECIES.CSV}{REF\_SPECIES.CSV} (current as of 2015-06) file from the same location. CA\_TREE and REF\_SPECIES are included with this package. 
+
+What follows is code that will guide you through parameter generation for several species of California trees. If you need help with the individual functions, use the ?function. These functions are not extensively tested with ``wrong'' data, so please be sure to read the help files if you're unsure about input or output within a particular function. 
+
+\section{Installing MakeMyForests}
+
+MakeMyForests is a standalone package, but is not currently available on \href{http://cran.r-project.org}{CRAN}. To download MakeMyForests, you need to access the package through GitHub. Luckily, the devtools package has a function to download and install packages from GitHub directly, without the use of a browser. 
+
+<<>>=
+
+## install and load the devtools package
+#install.packages("devtools")
+library(devtools)
+
+## install and load the MakeMyForests package
+#install_github("ecology-rocks/MakeMyForests")
+library(MakeMyForests)
+@
+
+\section{Selecting Our Species}
+
+Now that we have MakeMyForests installed, we'll need to select the species we want to work with. For ease of use, MakeMyForests comes with the FIA data for California already loaded as an object called FullTreesCA. A quick look shows that this object is rather large. 
+
+<<>>=
+nrow(FullTreesCA)
+ncol(FullTreesCA)
+head(colnames(FullTreesCA))
+tail(colnames(FullTreesCA))
+
+@
+
+For our purposes, we definitely do not need all of the 154 columns. Nor do we need all of the different species that can be found in FullTrees CA. For this exercise, we will pick 11 species from FullTrees CA and only a few of the columns. Our end data.frame will look something like this:
+
+<<>>=
+str(TreesCA)
+head(TreesCA)
+@
+
+But, to get to the trimmed table, we'll need to select our species and subset FullTreesCA. Here's our list of soft- and hard-woods, by species short code. The species short codes for your species of interest can be found at the \href{http://plants.usda.gov}{USDA PLANTS Database}. After you get a vector of shortcodes, you can subset FullTreesCA in a two-step process. First, you'll need to get the FIA special ``SPCD'' codes from the REF\_SPECIES table, and then you'll need to subset based on those codes. The REF\_SPECIES table is included in this package as ``RefSpecies.''
+
+<<>>=
+## Manually species shortcodes from USDA PLANTS Database in a vector
+speciesShortCodes <- c("ABCO", "ABMA", "CADE27", 
+                       "PIMO3", "PICO", "PIJE", 
+                       "PIPO", "PILA", "PSME", 
+                       "QUCH2", "QUKE")
+## Get SPCD from your list of species short codes
+speciesCodes <- pullSpeciesCodes(speciesShortCodes, 
+                                 RefSpecies)
+
+## subset FullTreesCA based on the speciesCodes, and select 12 columns out of
+## the original 154.
+trees <- pullTrees(speciesCodes, FullTreesCA, 
+                   c("PLT_CN", "TREE", "STATUSCD", 
+                     "SPCD", "DIA", "HT", 
+                     "CR", "CDENCD", "TRANSCD", 
+                     "BHAGE", "TOTAGE", "CLIGHTCD"))
+
+## examine the resulting ``trees'' data.frame, which should be much easier to
+## work with.
+str(trees)
+@
+
+You may notice that our ``trees'' object has one column more than ``TreesCA'' -- this is because TreesCA was generated as a sample object early in the process, and did not have the ``STATUSCD'' column, which is necessary for mortality calculations. 
+
+Also, an important thing to note. pullTrees() not only subsets the data, it also converts it from the standard feet and inches to metric meters and centimeters. This conversion is wrapped in the pullTrees function, which means that if you just subset your TREE.CSV file manually, the numbers will still be in feet and inches. If you want to manually subset and convert later, you can use ?unitConvert to do so.
+
+Finally, we need to set up an object to hold our parameters as we gather them. I've called this data.frame ``speciesInfo'', and created it below:
+
+<<>>=
+speciesInfo <- data.frame(shortcode=speciesShortCodes, 
+                          SPCD=speciesCodes, 
+                          stringsAsFactors=FALSE)
+
+speciesInfo
+@
+
+
+\section{Allometry Parameters}
+
+In this section, we'll figure out how to calculate different allometric parameters required by SORTIE-ND. The first parameter, asymptotic (maximum) height, is relatively simple to calculate. \citet{Pacala1996} nicknamed this parameter ``$H_1$'', and we will follow the convention. In essence, the way we calculate $H_1$ is to use the max() function in R. However, we do this within a wrapper that you'll see time and time again, ``doFxBySort()''. This function takes four parameters: the function to use; the sorting column, the column to do the function on, and that data.frame to use. This allows us to perform a function by a sorting variable, like ``SPCD'' (the species code), without having to wrap in a for-loop or mess with the ``apply'' class of functions in R. The ``HT'' column is the height of an individual tree.
+
+<<>>=
+
+speciesInfo$H1=doFxBySort(max, 
+                          "SPCD", 
+                          "HT", 
+                          trees
+                          )
+head(speciesInfo)
+@
+
+Part of the reason that we need $H_1$ is that we need to calculate $H_3$, or the slope of asymptotic height. \citet{Pacala1996} established the relationship between these two variables in the following equation:
+
+\begin{equation}
+\label{eq:height}
+h = H_1(1-e^{-(H_2/H_1)d})
+\end{equation}
+
+where \textit{h} is height, \textit{$H_1$} is the asymptotic (maximum) height of a particular species,  \textit{$H_2/H_1$} is the slope of asymptotic height, and \textit{d} is the DBH. For convenience, we will refer to the \textit{$H_2/H_1$} parameter as $H_3$. To calculate $H_3$, we'll need to reconstruct the model in equation~\ref{eq:height}. We can do that with the function getH3, wrapped in doFxBySort for each species. To make it easier, first we'll need to put $H_1$ into a new column in ``trees'', so that it can be readily accessed by the non-linear model. We'll do this with the function ``putChar''.
+
+<<>>=
+
+## put a vector of H1 values into "trees" according to species
+trees$H1 <- unlist(putChar(trees, 
+                           speciesInfo[,c("SPCD", "H1")], 
+                           "H1"))
+
+## now, find the H3 values for each species.
+speciesInfo$H3 <- doFxBySort(getH3, 
+                             "SPCD", 
+                             c("HT", "H1", "DIA"), 
+                             trees
+                             )
+
+## look at new speciesInfo table
+speciesInfo
+@
+
+Obviously, we need more than just the height and diameter relationship if we're going to model trees. We also need crown characteristics. SORTIE-ND makes use of several crown characteristics for its model, including the ratio of tree crown radius (m) to stem diameter (cm), known as $C_1$ in \citet{Pacala1996}. This can be hard to estimate for some species, because crown radius is not an often-measured characteristic in forestry. If you are working outside of the Western United States, you may need to consult the scientific literature to either find appropriate measures, or find models that correlate crown radius to some aspect of the data that you already have.
+
+In our case, we found a paper, \citet{Bechtold2004}, that has published models for the relationship between crown diameter and stem diameter for each of our 11 species. Since we have stem diameter, we can predict crown diameter, and then calculate the ratio of crown radius to stem diameter for each species. The equation used to relate stem diameter and crown diameter is as follows:
+
+\begin{equation}
+\label{eq:crown}
+MCD = b_0 + b_1 (d) + b_2 (d^2)
+\end{equation}
+
+where \textit{MCD} is mean crown diameter, \textit{$b_0$, $b_1$}, and \textit{$b_2$} are species specific constants established previously by \citet{Bechtold2004}, and \textit{d} is DBH. So, to calculate this ratio, we need to manually import the parameters and then apply the model to our trees by species to get mean crown radius, then divide by stem diameter. 
+<<>>=
+## manually imported from Table 3 in Bechtold 2004
+b0 <- c(4.4965, 4.7623, 4.1207,
+        4.284, -1.1994, 4.2675,
+        2.3081, 4.8657, 5.7753,
+        6.1397, 7.0284)
+b1 <- c(0.9238, 0.5222, 0.9773,
+        0.6949, 1.5151, 0.7714,
+        1.1388, 0.789, 1.0639,
+        1.0109, 1.047)
+b2 <- c(-0.012, 0, -0.0107,
+        0, -0.0232, 0,
+        -0.0089, 0, -0.0109,
+        0, 0)
+
+## Put those into a separate dataframe for ease...
+speciesC1params <- data.frame(SPCD=unique(trees$SPCD), 
+                              b0=b0, b1=b1, b2=b2)
+
+## put b0, b1, and b2 into trees based on species
+trees$b0 <- unlist(putChar(trees, 
+                           speciesC1params[,c(1:2)], "b0"))
+trees$b1 <- unlist(putChar(trees, 
+                           speciesC1params[,c(1,3)], "b1"))
+trees$b2 <- unlist(putChar(trees, 
+                           speciesC1params[,c(1,4)], "b2"))
+
+## calculate C1 for each species from diameter
+speciesInfo$C1 <- doFxBySort(getC1, 
+                             "SPCD", 
+                             c("DIA", "b0", "b1", "b2"), 
+                             trees
+                             )
+
+@
+
+
+The next two parameters, $C_2$ and $E_1$, are actually already available in the FIA data. We just need to clean them up a bit. $C_2$ is the crown ratio, or the crown length (m) divided by the tree height (m). It can be found in the TREES.CSV file under the column name ``CR'' for crown ratio. $E_1$ is the ``light extinction coefficient'', or the amount of light that reaches the ground after penetrating the canopy. This is also found in the original FIA data, under the column name ``TRANSCD'', or transparency code. For both of these parameters, we can simply take the average by species, removing NA values to avoid errors, and dividing by 100 to get a value between 0 and 1.
+
+<<>>=
+
+speciesInfo$C2 <- (doFxBySort(mean, 
+                              "SPCD", 
+                              "CR", 
+                              trees, 
+                              extraParams=list(na.rm=TRUE))
+                   )/100
+
+speciesInfo$E1 <- (doFxBySort(mean, 
+                              "SPCD", 
+                              "TRANSCD", 
+                              trees, 
+                              extraParams=list(na.rm=TRUE))
+                   )/100
+
+speciesInfo
+@
+
+\section{Growth, Death, and Reproduction}
+
+We need a few other parameters before we can get SORTIE-ND to run successfully. These are not really allometric parameters, but instead deal with growth, reproduction, and death. SORTIE-ND needs the minimum DBH at which a tree is reproductively active, parameters representing the relationship between growth at high- and low- light, and some version of mortality. We will go through each of these below. 
+
+\subsection{Minimum Adult DBH}
+SORTIE-ND needs to know when a tree can start producing offspring, as some trees may be large (saplings or poles), but unable to have meaningful reproductive output. Unfortunately, the minimum adult DBH is a vague and challenging piece of information to find about individual trees. We used a combination of literature search and modeling to estimate the minimum adult DBH of our eleven tree species. We retrieved estimates of minimum reproductive \textit{age} from \citet{Burns1990}, an excellent resource for trees in North America. We then developed a simple linear model to predict the relationship between DBH and age from the FIA data. Finally, we put the estimated minimum DBH into speciesInfo. You'll see one new function, called ``predictYfromLin'' -- this is exactly what it sounds like. It takes a formula (``DIA~BHAGE'') and predicts new values of Y. 
+
+<<>>=
+
+
+## Original minimum adult ages from literature searches.
+speciesInfo$minAge <- c(40, 35, 10,
+             7, 5, 8,
+            16, 40, 15,
+            20, 30)
+
+## Put the minimum age into trees by species
+trees$minAge <- unlist(
+                        putChar(trees, 
+                                speciesInfo[,c("SPCD", "minAge")], 
+                                "minAge")
+                        )
+
+## predict Y from a regression using the minAge column in trees
+speciesInfo$minDBH <- doFxBySort(predictYfromLin, 
+                                 "SPCD", 
+                                 c("minAge", "DIA", "BHAGE"), 
+                                 trees, 
+                                 extraParams=list(formula="DIA~BHAGE")
+                                 )
+
+@
+
+\subsection{Growth in High and Low Light}
+Another important piece of information that SORTIE-ND needs is how trees grow and respond to different light conditions. Specifically, SORTIE-ND needs the parameters of the following equation for each species:
+
+\begin{equation}
+\label{eq:growth}
+Y = a + (b * GLI)
+\end{equation}
+
+Where Y is the yearly increase in diameter, a is the species-specific intercept (growth at zero light), b is the species-specific slope (maximum yearly growth), and GLI is the global light index for the individuals, or the amount of light an individual receives. If we can estimate GLI and Y, we can calculate the values for \textit{a} and \textit{b}. Luckily, the FIA data has a column called ``CLIGHTCD'' which is a canopy light code. It ranges between 1-5 and represents no light received by the canopy (1) to light received from all sides (5). We can convert these into numerical equivalents of GLI. For Y, or the yearly diameter increase, we can estimate mean yearly increase by dividing the age of a tree by its current DBH. Not all trees have all three of these values, so we first need to prepare by subsetting the data.frame to include only those trees with values in each column:
+
+<<>>=
+## This just subsets the data into trees with both BHAGE and CLIGHTCD available,
+## and also does some housecleaning by converting CLIGHTCD into a usable format,
+## calculating dia/yr, etc.
+LightedTrees <- prepLightData(trees)
+
+head(LightedTrees)
+@
+
+Now that we've calculated yearly diameter increase and a ``light'' column representing GLI, we can go ahead and compute the linear model in equation~\ref{eq:growth} and pull out the parameters. For convenience, I've done exactly that with ``doSpecies'', which is a little different (older) than doFxBySort, but can create a glm just fine. If you want to explore each model, you'll need to do that manually; this function only calculates the model and pulls the slope and intercept. It takes your trimmed dataframe, the function, and the parameter you want to pull out. doSpecies will also perform bootstrapped mean and standard deviation, check its help file (?doSpecies) for more information.
+
+<<>>=
+
+## put sloep and intercept of yearly growth as predicted by light into
+## speciesInfo
+speciesInfo$SlopeYrlyGrowth <- doSpecies(LightedTrees, "glm", "slope")
+speciesInfo$IntYrlyGrowth <- doSpecies(LightedTrees, "glm", "int")
+
+speciesInfo
+@
+
+\subsection{Mortality}
+Finally, we need to calculate mortality rate for each species. This is a pretty straightforward calculation using the ``STATUSCD'' column in ``trees.'' First, you get a count of alive and dead trees, which you can do with doFxBySort. STATUSCD gives a code of 1 for an alive tree, and a code of 2 for a dead tree. So, to count the number of live trees, we can sum where STATUSCD is equal to 1. For dead trees, we can sum and then divide by 2. Then, we can get the proportion of dead, as well as the inverse for the survival rate. 
+
+<<>>=
+
+## get number of live trees by species
+speciesInfo$NumAlive <- doFxBySort(sum, 
+                                   "SPCD", 
+                                   c("STATUSCD"), 
+                                   trees[trees$STATUSCD==1,]
+                                   )
+
+## get number of dead trees by species
+speciesInfo$NumDead <- doFxBySort(sum, 
+                                  "SPCD", 
+                                  c("STATUSCD"), 
+                                  trees[trees$STATUSCD==2,]
+                                  )/2
+## calculate mortality rate as the proportion of total trees that were dead
+speciesInfo$MortalityRate <- speciesInfo$NumDead / 
+                            (speciesInfo$NumAlive + speciesInfo$NumDead)
+
+## get the inverse for survival
+speciesInfo$SurvivalRate <- 1-speciesInfo$MortalityRate
+
+## look at the updated speciesInfoTable
+speciesInfo
+@
+
+
+\section{Conclusions}
+
+There are certainly parameters that I was not able to address using FIA data. One major parameter that comes to mind is spatial seed dispersal. There is little-to-no information about seeds and seedlings available in the FIA data, especially as spatially informative data. To get a good measure of spatial or even non-spatial seed dispersal, you'll need to consult other data. 
+
+We have an advantage in our study system. There are some data available as exhaustive plot maps. These plot maps include our target species, and researchers have established (x,y) locations of every seedling, sapling, and adult tree in a given area. Where possible, the researchers also measured DBH. If you have these data available for your trees, I encourage you to check out the disperseR package that I am developing. You can download it in the same fashion as MakeMyForests:
+
+<<>>=
+#install_github("ecology-rocks/disperseR")
+#library(disperseR)
+@
+
+and access the vignette available there to create spatial seed dispersal parameters.
+
+
+\bibliographystyle{sty/ecology}
+\bibliography{MakeMyForestsManual}
+\end{document}

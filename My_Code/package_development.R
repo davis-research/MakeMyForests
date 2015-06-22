@@ -15,4 +15,6 @@ document()
 
 install("../MakeMyForests")
 
+build_vignettes()
+
 ## I have the FIA stuff fully integrated; I need to work on the USGS stuff.

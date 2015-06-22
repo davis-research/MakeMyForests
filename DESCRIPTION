@@ -1,5 +1,5 @@
 Package: MakeMyForests
-Title: SORTIE-ND Preparation From FIA And USGS Forest Inventory Data
+Title: SORTIE-ND Preparation From Forest Inventory Data
 Version: 0.0.0.9000
 Authors@R: person("Samantha", "Davis", email = "clubtenna@gmail.com", role = c("aut", "cre"))
 Description: This package contains miscellaneous functions that 
