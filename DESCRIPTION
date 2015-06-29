@@ -1,10 +1,13 @@
 Package: MakeMyForests
 Title: SORTIE-ND Preparation From Forest Inventory Data
-Version: 0.0.0.9000
-Authors@R: person("Samantha", "Davis", email = "clubtenna@gmail.com", role = c("aut", "cre"))
+Version: 1.0.0.0
+Date: 2015-07-01
+Authors@R: c(person("Samantha Lynn", "Davis", email = "clubtenna@gmail.com", 
+                    role = c("aut", "cre")),
+             person("Emily V.", "Moran", email="emoran5@ucmerced.edu", role="aut"))
 Description: This package contains miscellaneous functions that 
     help the user prepare basic forest inventory data for use with 
     SORTIE-ND, a neighborhood dynamics forest gap model.
 Depends: R (>= 3.2.0)
-License: CC-BY-4.0 https://creativecommons.org/licenses/by/4.0/
+License: GPL-3
 LazyData: true
