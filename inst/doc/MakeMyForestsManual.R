@@ -14,26 +14,16 @@ library(MakeMyForests)
 
 
 ###################################################
-### code chunk number 2: MakeMyForestsManual.Rnw:41-46
+### code chunk number 2: MakeMyForestsManual.Rnw:41-43
 ###################################################
 nrow(FullTreesCA)
 ncol(FullTreesCA)
-head(colnames(FullTreesCA))
-tail(colnames(FullTreesCA))
-
 
 
 ###################################################
-### code chunk number 3: MakeMyForestsManual.Rnw:51-53
+### code chunk number 3: MakeMyForestsManual.Rnw:52-72
 ###################################################
-str(TreesCA)
-head(TreesCA)
-
-
-###################################################
-### code chunk number 4: MakeMyForestsManual.Rnw:58-78
-###################################################
-## Manually species shortcodes from USDA PLANTS Database in a vector
+## Manually retrieve species shortcodes from USDA PLANTS Database in a vector
 speciesShortCodes <- c("ABCO", "ABMA", "CADE27", 
                        "PIMO3", "PICO", "PIJE", 
                        "PIPO", "PILA", "PSME", 
@@ -56,7 +46,7 @@ str(trees)
 
 
 ###################################################
-### code chunk number 5: MakeMyForestsManual.Rnw:87-92
+### code chunk number 4: MakeMyForestsManual.Rnw:81-86
 ###################################################
 speciesInfo <- data.frame(shortcode=speciesShortCodes, 
                           SPCD=speciesCodes, 
@@ -66,7 +56,7 @@ speciesInfo
 
 
 ###################################################
-### code chunk number 6: MakeMyForestsManual.Rnw:100-107
+### code chunk number 5: MakeMyForestsManual.Rnw:94-101
 ###################################################
 
 speciesInfo$H1=doFxBySort(max, 
@@ -78,7 +68,7 @@ head(speciesInfo)
 
 
 ###################################################
-### code chunk number 7: MakeMyForestsManual.Rnw:119-134
+### code chunk number 6: MakeMyForestsManual.Rnw:113-128
 ###################################################
 
 ## put a vector of H1 values into "trees" according to species
@@ -98,7 +88,7 @@ speciesInfo
 
 
 ###################################################
-### code chunk number 8: MakeMyForestsManual.Rnw:147-180
+### code chunk number 7: MakeMyForestsManual.Rnw:141-174
 ###################################################
 ## manually imported from Table 3 in Bechtold 2004
 b0 <- c(4.4965, 4.7623, 4.1207,
@@ -136,7 +126,7 @@ speciesInfo$C1 <- doFxBySort(getC1,
 
 
 ###################################################
-### code chunk number 9: MakeMyForestsManual.Rnw:186-202
+### code chunk number 8: MakeMyForestsManual.Rnw:180-196
 ###################################################
 
 speciesInfo$C2 <- (doFxBySort(mean, 
@@ -157,7 +147,7 @@ speciesInfo
 
 
 ###################################################
-### code chunk number 10: MakeMyForestsManual.Rnw:212-235
+### code chunk number 9: MakeMyForestsManual.Rnw:206-229
 ###################################################
 
 
@@ -185,7 +175,7 @@ speciesInfo$minDBH <- doFxBySort(predictYfromLin,
 
 
 ###################################################
-### code chunk number 11: MakeMyForestsManual.Rnw:248-254
+### code chunk number 10: MakeMyForestsManual.Rnw:248-254
 ###################################################
 ## This just subsets the data into trees with both BHAGE and CLIGHTCD available,
 ## and also does some housecleaning by converting CLIGHTCD into a usable format,
@@ -196,7 +186,7 @@ head(LightedTrees)
 
 
 ###################################################
-### code chunk number 12: MakeMyForestsManual.Rnw:259-266
+### code chunk number 11: MakeMyForestsManual.Rnw:259-266
 ###################################################
 
 ## put sloep and intercept of yearly growth as predicted by light into
@@ -208,7 +198,7 @@ speciesInfo
 
 
 ###################################################
-### code chunk number 13: MakeMyForestsManual.Rnw:272-295
+### code chunk number 12: MakeMyForestsManual.Rnw:272-295
 ###################################################
 
 ## get number of live trees by species
@@ -236,7 +226,7 @@ speciesInfo
 
 
 ###################################################
-### code chunk number 14: MakeMyForestsManual.Rnw:305-307
+### code chunk number 13: MakeMyForestsManual.Rnw:305-307
 ###################################################
 #install_github("ecology-rocks/disperseR")
 #library(disperseR)

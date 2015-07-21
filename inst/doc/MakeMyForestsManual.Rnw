@@ -41,22 +41,16 @@ Now that we have MakeMyForests installed, we'll need to select the species we wa
 <<>>=
 nrow(FullTreesCA)
 ncol(FullTreesCA)
-head(colnames(FullTreesCA))
-tail(colnames(FullTreesCA))
-
 @
 
-For our purposes, we definitely do not need all of the 154 columns. Nor do we need all of the different species that can be found in FullTrees CA. For this exercise, we will pick 11 species from FullTrees CA and only a few of the columns. Our end data.frame will look something like this:
+For our purposes, we definitely do not need all of the 154 columns. Nor do we need all of the different species that can be found in FullTrees CA. For this exercise, we will pick 11 species from FullTrees CA and only a few of the columns. 
+
+To get to the trimmed table, we'll need to select our species and subset FullTreesCA. Here's our list of soft- and hard-woods, by species short code. The species short codes for your species of interest can be found at the \href{http://plants.usda.gov}{USDA PLANTS Database}. After you get a vector of shortcodes, you can subset FullTreesCA in a two-step process. First, you'll need to get the FIA special ``SPCD'' codes from the REF\_SPECIES table, and then you'll need to subset based on those codes. The REF\_SPECIES table is included in this package as ``RefSpecies.''
+
+The columns that we're pulling in the code below all serve a purpose. "PLT\_CN" is a plot identifier; "TREE" is a tree identifier; "STATUSCD" is a code that tells us whether a tree is alive or dead, "SPCD" is the species identifier, "DIA" is diameter at breast height, in inches; "HT" is the height of the tree, in feet; "CR" is the compacted crown ratio, "CDENDCD" is the density of the canopy as a code; "TRANSCD" is the transparency of the canopy as a code; "BHAGE" is the age of a tree determined at breast height, in years; "TOTAGE" is a transformation of "BHAGE" to try and account for the years before a tree reached BH; and "CLIGHTCD" is a code indicating how much light a tree receives on its canopy. All of these columns are described extensively in the FIA Data documentation, which can be accessed at the \href{http://apps.fs.fed.us/fiadb-downloads/datamart.html}{FIA Data Mart}. 
 
 <<>>=
-str(TreesCA)
-head(TreesCA)
-@
-
-But, to get to the trimmed table, we'll need to select our species and subset FullTreesCA. Here's our list of soft- and hard-woods, by species short code. The species short codes for your species of interest can be found at the \href{http://plants.usda.gov}{USDA PLANTS Database}. After you get a vector of shortcodes, you can subset FullTreesCA in a two-step process. First, you'll need to get the FIA special ``SPCD'' codes from the REF\_SPECIES table, and then you'll need to subset based on those codes. The REF\_SPECIES table is included in this package as ``RefSpecies.''
-
-<<>>=
-## Manually species shortcodes from USDA PLANTS Database in a vector
+## Manually retrieve species shortcodes from USDA PLANTS Database in a vector
 speciesShortCodes <- c("ABCO", "ABMA", "CADE27", 
                        "PIMO3", "PICO", "PIJE", 
                        "PIPO", "PILA", "PSME", 
@@ -243,7 +237,13 @@ Another important piece of information that SORTIE-ND needs is how trees grow an
 Y = a + (b * GLI)
 \end{equation}
 
-Where Y is the yearly increase in diameter, a is the species-specific intercept (growth at zero light), b is the species-specific slope (maximum yearly growth), and GLI is the global light index for the individuals, or the amount of light an individual receives. If we can estimate GLI and Y, we can calculate the values for \textit{a} and \textit{b}. Luckily, the FIA data has a column called ``CLIGHTCD'' which is a canopy light code. It ranges between 1-5 and represents no light received by the canopy (1) to light received from all sides (5). We can convert these into numerical equivalents of GLI. For Y, or the yearly diameter increase, we can estimate mean yearly increase by dividing the age of a tree by its current DBH. Not all trees have all three of these values, so we first need to prepare by subsetting the data.frame to include only those trees with values in each column:
+Where Y is the yearly increase in diameter, a is the species-specific intercept (growth at zero light), b is the species-specific slope (maximum yearly growth), and GLI is the global light index for the individuals, or the amount of light an individual receives. If we can estimate GLI and Y, we can calculate the values for \textit{a} and \textit{b}. Luckily, the FIA data has a column called ``CLIGHTCD'' which is a canopy light code. It ranges between 1-5 and represents no light received by the canopy (1) to light received from all sides (5). 
+
+Now, two caveats. First, the upcoming code currently assumes that "1" means no light at all, or true darkness. This is obviously not correct, because the trees will still receive some amount of reflected light, even in total shade. Future updates will hopefully address this concern of "underestimation". 
+
+Second, our method of estimating yearly diameter increase is not perfect. Young trees often have a linear relationship between DBH increase and time; but older trees often deviate from that relationship. Due to the quality of these data, we do not have accurate growth curves for these species, and there is bound to be some error in the yearly diameter increase that is estimated below.
+
+We can convert these into numerical equivalents of GLI, where a code of "1" would be no light, or a GLI at 0. A code of 5 would be a GLI at 100. For Y, or the yearly diameter increase, we can estimate mean yearly increase by dividing the age of a tree by its current DBH. Not all trees have all three of these values, so we first need to prepare by subsetting the data.frame to include only those trees with values in each column:
 
 <<>>=
 ## This just subsets the data into trees with both BHAGE and CLIGHTCD available,
@@ -254,7 +254,7 @@ LightedTrees <- prepLightData(trees)
 head(LightedTrees)
 @
 
-Now that we've calculated yearly diameter increase and a ``light'' column representing GLI, we can go ahead and compute the linear model in equation~\ref{eq:growth} and pull out the parameters. For convenience, I've done exactly that with ``doSpecies'', which is a little different (older) than doFxBySort, but can create a glm just fine. If you want to explore each model, you'll need to do that manually; this function only calculates the model and pulls the slope and intercept. It takes your trimmed dataframe, the function, and the parameter you want to pull out. doSpecies will also perform bootstrapped mean and standard deviation, check its help file (?doSpecies) for more information.
+Now that we've calculated yearly diameter increase and a ``light'' column representing GLI, we can go ahead and compute the linear model in equation~\ref{eq:growth} and pull out the parameters. For convenience, I've done exactly that with ``doSpecies'', which is a little different (older) than doFxBySort, but can create a glm just fine. If you want to explore each model, you'll need to do that manually; this function only calculates the model and pulls the slope and intercept. It takes your trimmed dataframe, the function, and the parameter you want to pull out. doSpecies will also perform bootstrapped mean and standard deviation, check its help file (?doSpecies) for more information. doSpecies will hopefully be depracated in later versions of this document and code, and I'll update it to do the same thing with doFxBySort.
 
 <<>>=
 
