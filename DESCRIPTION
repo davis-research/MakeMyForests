@@ -1,6 +1,6 @@
 Package: MakeMyForests
 Title: SORTIE-ND Preparation From Forest Inventory Data
-Version: 1.0.0.0
+Version: 0.0.9.0
 Date: 2015-07-01
 Authors@R: c(person("Samantha Lynn", "Davis", email = "clubtenna@gmail.com", 
                     role = c("aut", "cre")),
@@ -11,3 +11,4 @@ Description: This package contains miscellaneous functions that
 Depends: R (>= 3.2.0)
 License: GPL-3
 LazyData: true
+Suggests: testthat
