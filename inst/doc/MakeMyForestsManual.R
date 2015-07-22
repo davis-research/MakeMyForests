@@ -59,16 +59,16 @@ speciesInfo
 ### code chunk number 5: MakeMyForestsManual.Rnw:94-101
 ###################################################
 
-speciesInfo$H1=doFxBySort(max, 
+speciesInfo$H1=round(doFxBySort(max, 
                           "SPCD", 
                           "HT", 
                           trees
-                          )
+                          ),3)
 head(speciesInfo)
 
 
 ###################################################
-### code chunk number 6: MakeMyForestsManual.Rnw:113-128
+### code chunk number 6: MakeMyForestsManual.Rnw:113-127
 ###################################################
 
 ## put a vector of H1 values into "trees" according to species
@@ -77,18 +77,17 @@ trees$H1 <- unlist(putChar(trees,
                            "H1"))
 
 ## now, find the H3 values for each species.
-speciesInfo$H3 <- doFxBySort(getH3, 
-                             "SPCD", 
+speciesInfo$H3 <- round(doFxBySort(getH3, "SPCD", 
                              c("HT", "H1", "DIA"), 
                              trees
-                             )
+                             ),3)
 
 ## look at new speciesInfo table
 speciesInfo
 
 
 ###################################################
-### code chunk number 7: MakeMyForestsManual.Rnw:141-174
+### code chunk number 7: MakeMyForestsManual.Rnw:140-173
 ###################################################
 ## manually imported from Table 3 in Bechtold 2004
 b0 <- c(4.4965, 4.7623, 4.1207,
@@ -117,37 +116,37 @@ trees$b2 <- unlist(putChar(trees,
                            speciesC1params[,c(1,4)], "b2"))
 
 ## calculate C1 for each species from diameter
-speciesInfo$C1 <- doFxBySort(getC1, 
+speciesInfo$C1 <- round(doFxBySort(getC1, 
                              "SPCD", 
                              c("DIA", "b0", "b1", "b2"), 
                              trees
-                             )
+                             ),3)
 
 
 
 ###################################################
-### code chunk number 8: MakeMyForestsManual.Rnw:180-196
+### code chunk number 8: MakeMyForestsManual.Rnw:179-195
 ###################################################
 
-speciesInfo$C2 <- (doFxBySort(mean, 
+speciesInfo$C2 <- round((doFxBySort(mean, 
                               "SPCD", 
                               "CR", 
                               trees, 
                               extraParams=list(na.rm=TRUE))
-                   )/100
+                   )/100,3)
 
-speciesInfo$E1 <- (doFxBySort(mean, 
+speciesInfo$E1 <- round((doFxBySort(mean, 
                               "SPCD", 
                               "TRANSCD", 
                               trees, 
                               extraParams=list(na.rm=TRUE))
-                   )/100
+                   )/100,3)
 
 speciesInfo
 
 
 ###################################################
-### code chunk number 9: MakeMyForestsManual.Rnw:206-229
+### code chunk number 9: MakeMyForestsManual.Rnw:205-228
 ###################################################
 
 
@@ -165,17 +164,17 @@ trees$minAge <- unlist(
                         )
 
 ## predict Y from a regression using the minAge column in trees
-speciesInfo$minDBH <- doFxBySort(predictYfromLin, 
+speciesInfo$minDBH <- round(doFxBySort(predictYfromLin, 
                                  "SPCD", 
                                  c("minAge", "DIA", "BHAGE"), 
                                  trees, 
                                  extraParams=list(formula="DIA~BHAGE")
-                                 )
+                                 ), 3)
 
 
 
 ###################################################
-### code chunk number 10: MakeMyForestsManual.Rnw:248-254
+### code chunk number 10: MakeMyForestsManual.Rnw:247-253
 ###################################################
 ## This just subsets the data into trees with both BHAGE and CLIGHTCD available,
 ## and also does some housecleaning by converting CLIGHTCD into a usable format,
@@ -186,19 +185,25 @@ head(LightedTrees)
 
 
 ###################################################
-### code chunk number 11: MakeMyForestsManual.Rnw:259-266
+### code chunk number 11: MakeMyForestsManual.Rnw:258-271
 ###################################################
 
-## put sloep and intercept of yearly growth as predicted by light into
+## put slope and intercept of yearly growth as predicted by light into
 ## speciesInfo
-speciesInfo$SlopeYrlyGrowth <- doSpecies(LightedTrees, "glm", "slope")
-speciesInfo$IntYrlyGrowth <- doSpecies(LightedTrees, "glm", "int")
+speciesInfo$SlopeYrlyGrowth <- round(getCoefficients(LightedTrees, 
+                                               "slope",
+                                               response="diayr", 
+                                               predictor="light"),6)
+speciesInfo$IntYrlyGrowth <- round(getCoefficients(LightedTrees, 
+                                             "int", 
+                                             response="diayr", 
+                                             predictor="light"),3)
 
 speciesInfo
 
 
 ###################################################
-### code chunk number 12: MakeMyForestsManual.Rnw:272-295
+### code chunk number 12: MakeMyForestsManual.Rnw:277-300
 ###################################################
 
 ## get number of live trees by species
@@ -215,8 +220,8 @@ speciesInfo$NumDead <- doFxBySort(sum,
                                   trees[trees$STATUSCD==2,]
                                   )/2
 ## calculate mortality rate as the proportion of total trees that were dead
-speciesInfo$MortalityRate <- speciesInfo$NumDead / 
-                            (speciesInfo$NumAlive + speciesInfo$NumDead)
+speciesInfo$MortalityRate <- round(speciesInfo$NumDead / 
+                            (speciesInfo$NumAlive + speciesInfo$NumDead),3)
 
 ## get the inverse for survival
 speciesInfo$SurvivalRate <- 1-speciesInfo$MortalityRate
@@ -226,7 +231,7 @@ speciesInfo
 
 
 ###################################################
-### code chunk number 13: MakeMyForestsManual.Rnw:305-307
+### code chunk number 13: MakeMyForestsManual.Rnw:310-312
 ###################################################
 #install_github("ecology-rocks/disperseR")
 #library(disperseR)

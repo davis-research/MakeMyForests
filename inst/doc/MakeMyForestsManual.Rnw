@@ -93,11 +93,11 @@ In this section, we'll figure out how to calculate different allometric paramete
 
 <<>>=
 
-speciesInfo$H1=doFxBySort(max, 
+speciesInfo$H1=round(doFxBySort(max, 
                           "SPCD", 
                           "HT", 
                           trees
-                          )
+                          ),3)
 head(speciesInfo)
 @
 
@@ -118,11 +118,10 @@ trees$H1 <- unlist(putChar(trees,
                            "H1"))
 
 ## now, find the H3 values for each species.
-speciesInfo$H3 <- doFxBySort(getH3, 
-                             "SPCD", 
+speciesInfo$H3 <- round(doFxBySort(getH3, "SPCD", 
                              c("HT", "H1", "DIA"), 
                              trees
-                             )
+                             ),3)
 
 ## look at new speciesInfo table
 speciesInfo
@@ -166,11 +165,11 @@ trees$b2 <- unlist(putChar(trees,
                            speciesC1params[,c(1,4)], "b2"))
 
 ## calculate C1 for each species from diameter
-speciesInfo$C1 <- doFxBySort(getC1, 
+speciesInfo$C1 <- round(doFxBySort(getC1, 
                              "SPCD", 
                              c("DIA", "b0", "b1", "b2"), 
                              trees
-                             )
+                             ),3)
 
 @
 
@@ -179,19 +178,19 @@ The next two parameters, $C_2$ and $E_1$, are actually already available in the 
 
 <<>>=
 
-speciesInfo$C2 <- (doFxBySort(mean, 
+speciesInfo$C2 <- round((doFxBySort(mean, 
                               "SPCD", 
                               "CR", 
                               trees, 
                               extraParams=list(na.rm=TRUE))
-                   )/100
+                   )/100,3)
 
-speciesInfo$E1 <- (doFxBySort(mean, 
+speciesInfo$E1 <- round((doFxBySort(mean, 
                               "SPCD", 
                               "TRANSCD", 
                               trees, 
                               extraParams=list(na.rm=TRUE))
-                   )/100
+                   )/100,3)
 
 speciesInfo
 @
@@ -220,12 +219,12 @@ trees$minAge <- unlist(
                         )
 
 ## predict Y from a regression using the minAge column in trees
-speciesInfo$minDBH <- doFxBySort(predictYfromLin, 
+speciesInfo$minDBH <- round(doFxBySort(predictYfromLin, 
                                  "SPCD", 
                                  c("minAge", "DIA", "BHAGE"), 
                                  trees, 
                                  extraParams=list(formula="DIA~BHAGE")
-                                 )
+                                 ), 3)
 
 @
 
@@ -254,14 +253,20 @@ LightedTrees <- prepLightData(trees)
 head(LightedTrees)
 @
 
-Now that we've calculated yearly diameter increase and a ``light'' column representing GLI, we can go ahead and compute the linear model in equation~\ref{eq:growth} and pull out the parameters. For convenience, I've done exactly that with ``doSpecies'', which is a little different (older) than doFxBySort, but can create a glm just fine. If you want to explore each model, you'll need to do that manually; this function only calculates the model and pulls the slope and intercept. It takes your trimmed dataframe, the function, and the parameter you want to pull out. doSpecies will also perform bootstrapped mean and standard deviation, check its help file (?doSpecies) for more information. doSpecies will hopefully be depracated in later versions of this document and code, and I'll update it to do the same thing with doFxBySort.
+Now that we've calculated yearly diameter increase and a ``light'' column representing GLI, we can go ahead and compute the linear model in equation~\ref{eq:growth} and pull out the parameters. For convenience, I've done exactly that with ``getCoefficients''. If you want to explore each model, you'll need to do that manually; this function only calculates the model and pulls the slope and intercept. 
 
 <<>>=
 
-## put sloep and intercept of yearly growth as predicted by light into
+## put slope and intercept of yearly growth as predicted by light into
 ## speciesInfo
-speciesInfo$SlopeYrlyGrowth <- doSpecies(LightedTrees, "glm", "slope")
-speciesInfo$IntYrlyGrowth <- doSpecies(LightedTrees, "glm", "int")
+speciesInfo$SlopeYrlyGrowth <- round(getCoefficients(LightedTrees, 
+                                               "slope",
+                                               response="diayr", 
+                                               predictor="light"),6)
+speciesInfo$IntYrlyGrowth <- round(getCoefficients(LightedTrees, 
+                                             "int", 
+                                             response="diayr", 
+                                             predictor="light"),3)
 
 speciesInfo
 @
@@ -285,8 +290,8 @@ speciesInfo$NumDead <- doFxBySort(sum,
                                   trees[trees$STATUSCD==2,]
                                   )/2
 ## calculate mortality rate as the proportion of total trees that were dead
-speciesInfo$MortalityRate <- speciesInfo$NumDead / 
-                            (speciesInfo$NumAlive + speciesInfo$NumDead)
+speciesInfo$MortalityRate <- round(speciesInfo$NumDead / 
+                            (speciesInfo$NumAlive + speciesInfo$NumDead),3)
 
 ## get the inverse for survival
 speciesInfo$SurvivalRate <- 1-speciesInfo$MortalityRate
