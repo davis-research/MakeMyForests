@@ -31,5 +31,6 @@ pullSpeciesCodes <- function(speciesList, refDataFrame){
                        select="SPCD")
   }	
   ## return our results in a vector
-  return(unlist(store))
+  store <- unlist(store)
+  return(store)
 }

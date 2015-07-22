@@ -24,6 +24,5 @@ This function does not police your use. If you predict from an X that
 }
 \examples{
 data <- data.frame(x=runif(30, min=0, max=25), y=runif(30, min=0, max=100), minAge=30)
- predictYfromLin
 }
 
