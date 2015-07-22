@@ -24,6 +24,7 @@ getH3 <- function(x){
   
   ## calculating the nls
   store <- nls(HT ~ H1*(1-exp(-DIA)), data=x, start=list(DIA=1))
+  
   ## returning the coefficient generated
   coefs <- coef(store)
   return(coefs["DIA"])

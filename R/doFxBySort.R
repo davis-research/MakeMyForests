@@ -40,6 +40,17 @@
 #' doFxBySort("mean", c("type", "species"), "weights", myDfNA, extraParam=list(na.rm=TRUE), includeSort=TRUE)
 
 doFxBySort <- function(fn, searchCols, doCols, fulldf, extraParams=NULL, includeSort=FALSE){
+  
+  ## do searchCols and doCols exist in fulldf?
+  checkcols <- c(searchCols, doCols)
+  dfcols <- colnames(fulldf)
+  for(i in 1:length(checkcols)){
+    if(!(checkcols[i] %in% dfcols)){
+      stop("Sorry, your searchCols or doCols values do not match a column in fulldf.")
+    }
+  }
+  
+  
   ## initialize response variable
     response <- NULL
   ## establish searches
