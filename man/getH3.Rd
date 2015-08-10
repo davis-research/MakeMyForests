@@ -4,7 +4,7 @@
 \alias{getH3}
 \title{Calculates the slope of asymptotic height (H3) for trees.}
 \usage{
-getH3(x)
+getH3(x, startVal = 1)
 }
 \arguments{
 \item{x}{The tree dataframe, it must have H1, HT, and DIA columns. It is

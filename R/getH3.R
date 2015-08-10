@@ -20,10 +20,18 @@
 #' 
 
 
-getH3 <- function(x){
+getH3 <- function(x, startVal=1){
   
+  ## make sure x is large enough
+  if(!is.data.frame(x)){
+    stop("Sorry, x should be a data.frame")
+  }
+  
+  if(nrow(x) < 10){
+    stop("Sorry, x needs to have more than 10 rows")
+  }
   ## calculating the nls
-  store <- nls(HT ~ H1*(1-exp(-DIA)), data=x, start=list(DIA=1))
+  store <- nls(HT ~ H1*(1-exp(-DIA)), data=x, start=list(DIA=startVal))
   
   ## returning the coefficient generated
   coefs <- coef(store)
