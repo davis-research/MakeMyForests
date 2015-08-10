@@ -10,12 +10,26 @@
 #'   available.
 #' @return This function returns a dataframe with light and diayr response columns.
 #' @examples
-#' store <- prepLightData(TreesCA)
+#' store <- prepLightData(TreesCA[,-4])
 #' head(store)
 #' @export
 #' 
 
 prepLightData <- function(treedb){
+  
+  if(!("CLIGHTCD" %in% colnames(treedb))){
+    stop("Sorry, you need CLIGHTCD in your data.frame to continue.")
+  }
+  if(!("BHAGE" %in% colnames(treedb))){
+    stop("Sorry, you need BHAGE in your data.frame to continue.")
+  }
+  if(!("DIA" %in% colnames(treedb))){
+    stop("Sorry, you need DIA in your data.frame to continue.")
+  }
+  if(!is.numeric(treedb[,"CLIGHTCD"]) | !is.numeric(treedb[, "BHAGE"]) | !is.numeric(treedb[, "DIA"])){
+    stop("Sorry, one of your columns is not numeric.")
+  }
+  
   ## trim db to only entries with light
   light <- treedb[!is.na(treedb$CLIGHTCD),]
   ## initialize light column
