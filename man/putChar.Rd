@@ -36,6 +36,6 @@ uniques$val <- c("Gross", "Yum", "Ew", "Florida!")
 putChar(myDf, uniques)
 ## remove species and duplicates to demonstrate only one search column
 uniques <- uniques[c(1,3), c(1,3)]
-putChar(myDf, uniques)
+putChar(myDf, uniques, "test")
 }
 
