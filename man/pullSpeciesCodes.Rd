@@ -4,7 +4,7 @@
 \alias{pullSpeciesCodes}
 \title{Get Species Codes From A Reference Table}
 \usage{
-pullSpeciesCodes(speciesList, refDataFrame)
+pullSpeciesCodes(speciesList, refDataFrame = "")
 }
 \arguments{
 \item{speciesList}{A character vector of the species shortcodes

@@ -15,8 +15,12 @@
 
 
 ## Get species codes from the reference table
-pullSpeciesCodes <- function(speciesList, refDataFrame){
+pullSpeciesCodes <- function(speciesList, refDataFrame=""){
   
+  ## if a custom data.frame is not specified, load the default data.
+  if(is.character(refDataFrame)){
+      refDataFrame <- get("RefSpecies")
+  }
   ##initialize counter and storage variables
   store <- NULL
   
@@ -32,5 +36,9 @@ pullSpeciesCodes <- function(speciesList, refDataFrame){
   }	
   ## return our results in a vector
   store <- unlist(store)
-  return(store)
+  if(length(store) > 0){
+    return(store)
+  } else{
+    stop("Sorry, nothing found.")
+  }
 }
