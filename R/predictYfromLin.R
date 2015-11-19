@@ -12,9 +12,10 @@
 #'   it assumes that there is a column in the dataframe called "minAge" that is
 #'   populated with the values you want to predict for. It takes the unique() of
 #'   x$minAge and uses that as the newX. This ensures that if you're wrapping in
-#'   \code{\link{DoFxBySort}}, you can have values specific to a given subset
+#'   \code{\link{doFxBySort}}, you can have values specific to a given subset
 #'   just by having them in another column, and since repeats are ignored, you
 #'   can have as many or as few up to the nrow() of your column.
+#'   @param newCol What you want your new column to be named.
 #' @note This function does not police your use. If you predict from an X that 
 #'   is outside of your range of original x's, that is on you.
 #' @export

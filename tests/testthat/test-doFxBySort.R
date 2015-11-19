@@ -15,8 +15,8 @@ tablemeans <- data.frame(type=c(rep("vegetable", 2),
                                 rep("fruit", 2)), 
                          species=c("broccoli", "beans", 
                                    "apples", "oranges"), 
-                         weights=groupmeans, 
-                         stringsAsFactors=F)
+                         response=groupmeans, 
+                         stringsAsFactors=T)
 
 test_that("doFxBySort calculates means by group", {
   expect_equal(doFxBySort("mean", 

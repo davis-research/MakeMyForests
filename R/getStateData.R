@@ -5,9 +5,10 @@
 #' @param stateID The two character state code for the data needed. 
 #' @export
 
-getStateData <- function(stateID, ...){
-  require(RCurl)
+getStateData <- function(stateID){
+  requireNamespace("RCurl")
+  loadNamespace("RCurl")
   base_url <- paste("http://apps.fs.fed.us/fiadb-downloads/", stateID, "_TREE.CSV", sep="")
-  if(!url.exists(base_url)){ stop("Invalid URL, try contacting package owner.")}
+  if(!RCurl::url.exists(base_url)){ stop("Invalid URL, try contacting package owner.")}
   return(read.csv(file=base_url, header=T, ...))
 }

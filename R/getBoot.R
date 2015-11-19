@@ -16,12 +16,13 @@
 #' 
 
 getBoot <- function(x, type="mean", R=1000){
-  require(boot)
+  requireNamespace("boot")
+  loadNamespace("boot")
   ## if type is mean...
   if(type=="mean"){
-    bootval <- boot(x, bootMean, R=R)
+    bootval <- boot::boot(x, bootMean, R=R)
   } else{
-    bootval <- boot(x, bootSd, R=R)
+    bootval <- boot::boot(x, bootSd, R=R)
   }
   return(bootval$t0)
 }

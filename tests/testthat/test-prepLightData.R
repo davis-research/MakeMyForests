@@ -12,7 +12,7 @@ test_that("prepLightData throws errors when needed", {
   expect_error(prepLightData(characterTest))
 })
 
-test_test("prepLightData performs correct calculations",{
+test_that("prepLightData performs correct calculations",{
   expect_equal(prepLightData(dummydata)[1,4], 100)
   expect_equal(prepLightData(dummydata)[1,5], 0.05) 
 })

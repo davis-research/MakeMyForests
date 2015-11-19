@@ -9,9 +9,6 @@
 #' @param treedb The TreesCA dataframe or similar. No customization options
 #'   available.
 #' @return This function returns a dataframe with light and diayr response columns.
-#' @examples
-#' store <- prepLightData(TreesCA[,-4])
-#' head(store)
 #' @export
 #' 
 

@@ -13,7 +13,7 @@
 #'   generally assumed that the treedb you enter will be trimmed to include only
 #'   rows for a species or grouping. H1, in particular, will most likely be the 
 #'   same for any individual within a species, but should not be a factor.
-#' @param start A starting number for the coefficient. 1, the default value, is 
+#' @param startVal A starting number for the coefficient. 1, the default value, is 
 #'   a pretty good guess for most, and you should only need to enter in a 
 #'   different value if the function is not operating as expected.
 #' @export

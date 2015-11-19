@@ -4,7 +4,7 @@
 \alias{getStateData}
 \title{Download state tree databases from the FIA Data Mart}
 \usage{
-getStateData(stateID, ...)
+getStateData(stateID)
 }
 \arguments{
 \item{stateID}{The two character state code for the data needed.}

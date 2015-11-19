@@ -17,14 +17,14 @@ of the columns to sort by.}
 \item{doCols}{A single string or vector of strings containing the names of
 the columns to use for function evaluation.}
 
+\item{fulldf}{The dataframe to use for searching and doing. Must contain the
+column names contained within both searchCols and doCols.}
+
 \item{extraParams}{Any extra parameters, if needed, to correctly run the
 function being called.}
 
 \item{includeSort}{Set this value to TRUE if you want to see the sort columns
   alongside the response variables.}
-
-\item{fullDf}{The dataframe to use for searching and doing. Must contain the
-column names contained within both searchCols and doCols.}
 }
 \value{
 This function returns either a vector of responses or a dataframe

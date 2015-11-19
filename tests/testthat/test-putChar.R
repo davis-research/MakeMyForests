@@ -17,7 +17,7 @@ uniques$val <- c("a", "b", "c", "d")
 
 test_that("putChar returns correct output", {
   expect_equal(unname(putChar(myDf, uniques, "test")), expectedOutputDf)
-)})
+})
 
 
 rm(list=c("expectedOutputDf", "uniques", "myDf"))

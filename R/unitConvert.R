@@ -4,7 +4,6 @@
 #' @param invar The units of x. Acceptable inputs are: ft, in, cm, m, in3.
 #' @param outvar The desired units of x. Acceptable outputs are: ft, in, cm, m, cm3. 
 #'     cm3 is only acceptable if the inputvar is in3.
-#' @param outvar The desired units of x. Acceptable outputs are: ft, in, cm, m, cm3.
 #' @return Returns x, transformed into the appropriate units.
 #' @export 
 #' @examples 

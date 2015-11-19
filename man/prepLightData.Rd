@@ -20,8 +20,4 @@ appropate 0-100 style percentage of light. Finally, it calculates the
 diameter increase per year for each tree by dividing DIA by BHAGE. It returns
 a dataframe with light and diayr columns.
 }
-\examples{
-store <- prepLightData(TreesCA[,-4])
-head(store)
-}
 

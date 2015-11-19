@@ -11,7 +11,7 @@
 #'   of the columns to sort by.
 #' @param doCols A single string or vector of strings containing the names of 
 #'   the columns to use for function evaluation.
-#' @param fullDf The dataframe to use for searching and doing. Must contain the 
+#' @param fulldf The dataframe to use for searching and doing. Must contain the 
 #'   column names contained within both searchCols and doCols.
 #' @param extraParams Any extra parameters, if needed, to correctly run the 
 #'   function being called.
@@ -76,7 +76,9 @@ doFxBySort <- function(fn, searchCols, doCols, fulldf, extraParams=NULL, include
   ## clean up the responses into a dataframe if needed
     if(includeSort==TRUE){
       response <- cbind(searches, response)
+      row.names(response) <- 1:nrow(response)
     } ## end if
   ## return the final response
+    
     return(response)
 }

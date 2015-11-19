@@ -4,7 +4,7 @@
 \name{RefSpecies}
 \alias{RefSpecies}
 \title{RefSpecies Data}
-\format{A data frame with 78 columns and 2568 rows of species.
+\format{A data frame with 7 columns and 2568 rows of species.
  \describe{
      \item{SPCD}{A four digit numerical code that corresponds to a species or subspecies of plant.}
      \item{COMMON_NAME}{The common name of the species.}
@@ -19,8 +19,6 @@
          number designation for a species. Matches the USDA
          PLANTS database designations, and is what we use to
          find or match species in this table.}
-     \item{etc...}{There are a lot more columns, most of which
-          are irrelevant to our aims with this package.}
  }}
 \usage{
 RefSpecies
