@@ -29,15 +29,18 @@
 #' rep("oranges", 5)), weights=as.numeric(runif(20, 0, 2))) 
 #' doFxBySort("mean", c("type", "species"), "weights", myDf)
 #' 
-#' doFxBySort("mean", c("type", "species"), "weights", myDf, includeSort=TRUE)
+#' doFxBySort("mean", c("type", "species"), 
+#' "weights", myDf, includeSort=TRUE)
 #' 
 #' myDfNA <- rbind(myDf, c("vegetable", "broccoli", NA))
 #' ## the above line converts the weights row to a character type, convert it back
 #' myDfNA$weights <- as.numeric(myDfNA$weights)
 #' ## do fx again
-#' doFxBySort("mean", c("type", "species"), "weights", myDfNA, extraParam=list(na.rm=TRUE))
+#' doFxBySort("mean", c("type", "species"), "weights", 
+#' myDfNA, extraParam=list(na.rm=TRUE))
 #' 
-#' doFxBySort("mean", c("type", "species"), "weights", myDfNA, extraParam=list(na.rm=TRUE), includeSort=TRUE)
+#' doFxBySort("mean", c("type", "species"), "weights", 
+#' myDfNA, extraParam=list(na.rm=TRUE), includeSort=TRUE)
 
 doFxBySort <- function(fn, searchCols, doCols, fulldf, extraParams=NULL, includeSort=FALSE){
   

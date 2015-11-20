@@ -27,6 +27,7 @@ MakeMyForests is a standalone package, but is not currently available on \href{h
 
 ## install and load the devtools package
 #install.packages("devtools")
+require("devtools")
 library(devtools)
 
 ## install and load the MakeMyForests package

@@ -2,7 +2,12 @@
 % Please edit documentation in R/getC1.R
 \name{getC1}
 \alias{getC1}
-\title{Get the Crown Radius to Tree Diameter Ratio (m/cm)}
+\title{Get the Crown Radius to Tree Diameter Ratio (m/cm)
+This function does a simple calculation to get the ratio of the crown radius
+ (m) to tree diameter (cm) of a particular species or subset of data. It
+converts the starting DIA measurements back to inches, calculates according
+to species specific parameters, then converts the crown radius from feet to
+meters, and returns the ratio of crown radius to tree diameter in m/cm.}
 \usage{
 getC1(x)
 }
@@ -13,20 +18,15 @@ getC1(x)
 }
 \value{
 This function returns a single number, the mean crown ratio for the
-  values you entered. Use the code{link{doFxBySort}} wrapper to get it for
+  values you entered. Use the \code{\link{doFxBySort}} wrapper to get it for
   multiple species, e.g.,
   doFxBySort(getC1, "SPCD", c("DIA", "b0", "b1", "b2"), TreesCA)
 }
 \description{
-This function does a simple calculation to get the ratio of the crown radius
-#' (m) to tree diameter (cm) of a particular species or subset of data. It
-converts the starting DIA measurements back to inches, calculates according
-to species specific parameters, then converts the crown radius from feet to
-meters, and returns the ratio of crown radius to tree diameter in m/cm.
+The generalized equation that these parameters fit is as follows:
 }
 \details{
-The generalized equation that these parameters fit is as follows:
-deqn{CrownRadius = (b0 + b1*DIA  + b2*DIA^2)/2} where b0, b1 and b2 are
+\deqn{CrownRadius = (b0 + b1*DIA  + b2*DIA^2)/2} where b0, b1 and b2 are
 species-specific parameters. These were calculated extensively for our main
 Sierra Nevada study species by Bechtold WA (2004) Largest-Crown-Width
 Prediction Models for 53 Species in the Western United States. West J Appl

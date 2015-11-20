@@ -11,4 +11,4 @@ Description: This package contains miscellaneous functions that
 Depends: R (>= 3.2.0)
 License: GPL-3
 LazyData: true
-Suggests: testthat, boot
+Suggests: testthat, boot, RCurl
