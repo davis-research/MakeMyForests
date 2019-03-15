@@ -24,4 +24,4 @@ To access the vignette, you can use:
 
     vignette("MakeMyForestsManual")
     
-You can find out more about the primary author/creator at [Ecology Rocks](http://www.ecology.rocks),  and find out more about the lab that facilitated this package development and is conducting the primary research at the [Moran Lab Site](https://sites.google.com/site/moranplantlab/).
+You can find out more about the primary author/creator at [my website](http://www.samldavisphd.com),  and find out more about the lab that facilitated this package development and is conducting the primary research at the [Moran Lab Site](https://sites.google.com/site/moranplantlab/).
